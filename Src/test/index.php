@@ -1,10 +1,4 @@
-# Di - Dependency Injection
-
-A PHP 7.0+ Simple Dependency Injection - Di - library. Light weight and Easy to use. Autowire any class. Similarly, you can autowire any config variables or values stored in the container.
-
- I am not going to bore you with lots of write-up to justify why you should or should not use this library as I strongly believe nobody says no to problem solving tools. So, here are the simplest example as it can be used to solve Di:
-
- ```php
+<?php
 
 class Hello {
 
@@ -100,8 +94,3 @@ $helloWorld = $di->injectCallable(["HelloWorld", "exampleForInjectingFunction"])
 echo $helloWorld->getHello();   //Output string "Hello"
 echo $helloWorld->getWorld();   //Output string "World"
 echo $helloWorld;               //Output string "Hello World Ademola Aina"
-
- ```
-
- If you check the `Countries` class, there are lots functions you can use for so many different internationalization. The example above are a few of how useful this library is to you. :)
-

@@ -78,7 +78,7 @@ class Autowire implements AutowireInterface
         $props = $reflector->getProperties();
         foreach ($props as $prop) {
             $docComment = $prop->getDocComment();
-            if (StringManagement::contains($docComment, "@Inject")) {
+            if (StringManagement::contains($docComment, $this->injectorAnnotation)) {
                 $prop->setAccessible(true);
                 $value = $prop->getValue($this->getObject());
                 if (empty($value)) { //Check if injectable already set.
