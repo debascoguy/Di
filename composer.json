@@ -1,5 +1,5 @@
 {
-    "name": "emma/internationalization",
+    "name": "emma/di",
     "description": "A PHP 7.0+ Dependency Injection - Di - library. Easy to use and can Autowire any class. Similarly, you can autowire any config variables or values stored in the container.",
     "authors": [
         {
