@@ -103,5 +103,3 @@ echo $helloWorld;               //Output string "Hello World Ademola Aina"
 
  ```
 
- If you check the `Countries` class, there are lots functions you can use for so many different internationalization. The example above are a few of how useful this library is to you. :)
-
