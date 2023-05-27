@@ -1,0 +1,21 @@
+{
+    "name": "emma/internationalization",
+    "description": "A PHP 7.0+ Dependency Injection library. Easy to use and can Autowire any class. Similarly, you can autowire any config variables or values stored in the container.",
+    "authors": [
+        {
+            "name": "Ademola Aina",
+            "email" : "debascoguy@gmail.com",
+            "homepage": "https://github.com/debascoguy/intlCountries",
+            "role": "Founder/Lead Software Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Emma\\Di\\": "Src/"
+        }
+    },
+    "license": "GPL-2.0-only"
+}
