@@ -1,14 +1,14 @@
 <?php
 
-namespace Emma\Di;
+namespace Emma\Di\Resolver;
 
-class CommentProcessor {
-
+class CommentResolver 
+{
     /**
      * @param $docComment
      * @return mixed|string
      */
-    public static function processAnnotationFromComment($docComment, $_at = null)
+    public static function resolve($docComment, $_at = null)
     {
         $pattern = '/\@'.$_at.'\s+[\\\.\w+]+/i';
         if (preg_match($pattern, $docComment, $matches)){

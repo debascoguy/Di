@@ -2,7 +2,9 @@
 
 namespace Emma\Di\Container\Interfaces;
 
-interface ContainerInterface
+use Emma\Di\Property\Interfaces\PropertyInterface;
+
+interface ContainerInterface extends PropertyInterface
 {
     /**
      * @param $concrete

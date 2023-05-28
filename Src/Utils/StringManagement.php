@@ -11,6 +11,16 @@ namespace Emma\Di\Utils;
 class StringManagement
 {
     /**
+     * @param $string
+     * @param string $replace_with
+     * @return string
+     */
+    public static function strip_space($string, $replace_with = "")
+    {
+        return trim(preg_replace('/\s+/', $replace_with, $string));
+    }
+
+    /**
      * @param $haystack
      * @param $needle
      * @param bool $case_sensitive
