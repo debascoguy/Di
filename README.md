@@ -86,7 +86,7 @@ $di->getContainer()->register('email', 'debascoguy@gmail.com');
 $helloWorld = $di->injectCallable(new HelloWorld());
 
 //OR
-$helloWorld = $di->injectCallable("HelloWorld");
+$helloWorld = $di->injectCallable(HelloWorld::class);
 
 echo $helloWorld->getHello();   //Output string "Hello"
 echo $helloWorld->getWorld();   //Output string "World"
@@ -95,7 +95,7 @@ echo $helloWorld;               //Output string "Hello World Ademola Aina"
 //AUTO-INJECT FUNCTION CALL
 $helloWorld = $di->injectCallable([new HelloWorld(), "exampleForInjectingFunction"]);
 //OR
-$helloWorld = $di->injectCallable(["HelloWorld", "exampleForInjectingFunction"]);
+$helloWorld = $di->injectCallable([HelloWorld::class, "exampleForInjectingFunction"]);
 
 echo $helloWorld->getHello();   //Output string "Hello"
 echo $helloWorld->getWorld();   //Output string "World"
