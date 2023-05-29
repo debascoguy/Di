@@ -69,7 +69,7 @@ trait ObjectCreator
      * @param \ReflectionParameter[] $parameters
      * @return array
      */
-    protected function getDependencies(array $parameters)
+    public function getDependencies(array $parameters)
     {
         $params = [];
         foreach($parameters as $parameter) {
