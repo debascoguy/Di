@@ -4,7 +4,7 @@ namespace Emma\Di;
 use Closure;
 use Emma\Di\Autowire\Autowire;
 use Emma\Di\Container\ContainerManager;
-use Emma\Di\Singleton\Singleton;
+use Emma\Common\Singleton\Singleton;
 use InvalidArgumentException;
 
 class DiFactory

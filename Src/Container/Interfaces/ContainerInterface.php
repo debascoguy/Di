@@ -2,7 +2,7 @@
 
 namespace Emma\Di\Container\Interfaces;
 
-use Emma\Di\Property\Interfaces\PropertyInterface;
+use Emma\Common\Property\Interfaces\PropertyInterface;
 
 interface ContainerInterface extends PropertyInterface
 {

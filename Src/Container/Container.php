@@ -7,9 +7,9 @@
 namespace Emma\Di\Container;
 
 use Emma\Di\Container\Interfaces\ContainerInterface;
-use Emma\Di\Singleton\SingletonInterface\SingletonInterface;
-use Emma\Di\Singleton\Singleton;
-use Emma\Di\Property\Property;
+use Emma\Common\Singleton\SingletonInterface\SingletonInterface;
+use Emma\Common\Singleton\Singleton;
+use Emma\Common\Property\Property;
 use InvalidArgumentException;
 
 class Container extends Property implements ContainerInterface, SingletonInterface

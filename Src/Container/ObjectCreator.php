@@ -6,7 +6,7 @@
  */
 namespace Emma\Di\Container;
 
-use Emma\Di\Singleton\SingletonInterface\SingletonInterface;
+use Emma\Common\Singleton\SingletonInterface\SingletonInterface;
 use InvalidArgumentException;
 
 trait ObjectCreator
