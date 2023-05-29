@@ -10,12 +10,16 @@
         }
     ],
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "emma/common": "1.0.0"
     },
     "autoload": {
         "psr-4": {
             "Emma\\Di\\": "Src/"
         }
     },
+    "require-dev": {
+		"emma/common": "1.0.0"
+	},
     "license": "GPL-2.0-only"
 }

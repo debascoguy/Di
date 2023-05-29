@@ -93,9 +93,11 @@ echo $helloWorld->getWorld();   //Output string "World"
 echo $helloWorld;               //Output string "Hello World Ademola Aina"
 
 //AUTO-INJECT FUNCTION CALL
-$helloWorld = $di->injectCallable([new HelloWorld(), "exampleForInjectingFunction"]);
+$callableParams = [];
+$helloWorld = $di->injectCallable([new HelloWorld(), "exampleForInjectingFunction"], $callableParams);
 //OR
-$helloWorld = $di->injectCallable([HelloWorld::class, "exampleForInjectingFunction"]);
+$helloWorld = $di->injectCallable([HelloWorld::class, "exampleForInjectingFunction"], $callableParams);
+$helloWorld->exampleForInjectingFunction($callableParams[0], $callableParams[1]);
 
 echo $helloWorld->getHello();   //Output string "Hello"
 echo $helloWorld->getWorld();   //Output string "World"
