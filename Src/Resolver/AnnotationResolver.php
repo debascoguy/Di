@@ -3,6 +3,7 @@
 namespace Emma\Di\Resolver;
 
 use Emma\Di\Annotation\Annotation;
+use Emma\Di\Annotation\AnnotationProperty;
 
 /**
  * @Author: Ademola Aina
@@ -10,7 +11,11 @@ use Emma\Di\Annotation\Annotation;
  */
 class AnnotationResolver
 {
-
+    /**
+     * @param $reflector
+     * @param $prop
+     * @return array
+     */
     public static function resolve($reflector, $prop)
     {
         $docComment = $prop->getDocComment();
@@ -20,7 +25,21 @@ class AnnotationResolver
         );
         return is_array($injectableInfo) ? 
                 $injectableInfo :
-                ['name' => NamespaceResolver::resolve($reflector, $prop, $injectableInfo)];
+                [AnnotationProperty::NAME => NamespaceResolver::resolve($reflector, $prop, $injectableInfo)];
+    }
+
+    /**
+     * @param string $docComment
+     * @param array $injectableBaseNames
+     * @return array|null
+     */
+    public static function resolveAll(string $docComment, array &$injectableBaseNames)
+    {
+        return CommentResolver::resolveAll(
+            $docComment, 
+            str_replace("@", "", Annotation::NAME),
+            $injectableBaseNames
+        );
     }
 
 }

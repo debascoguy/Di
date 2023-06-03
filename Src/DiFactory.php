@@ -2,9 +2,12 @@
 namespace Emma\Di;
 
 use Closure;
-use Emma\Di\Autowire\Autowire;
+use Emma\Common\CallBackHandler\CallBackHandler;
 use Emma\Di\Container\ContainerManager;
 use Emma\Common\Singleton\Singleton;
+use Emma\Di\Autowire\AutowireFunction;
+use Emma\Di\Autowire\AutowireMethod;
+use Emma\Di\Autowire\AutowireProperty;
 use InvalidArgumentException;
 
 class DiFactory
@@ -18,46 +21,67 @@ class DiFactory
     public function injectCallable($callable, &$callableParams = [])
     {
         if (is_array($callable)) {
-            return $this->injectArrayCallable($callable, $callableParams);
+            return $this->findInjectablePropertiesAndMethodParameters($callable, $callableParams);
         }
         
         if (class_exists($callable)) {
-            $callable = $this->inject($callable);
+            $callable = $this->injectObjectProperties($callable);
             return $callable;
         }
 
         if ($callable instanceof \Closure || is_string($callable)) {
-            $callableParams = $this->injectClosureParameters($callable);
+            $callableParams = $this->findInjectableClosureParameters($callable);
             return $callable;
         }
 
         return $callable;
     }
-    
-    /**
-     * @param $class
-     * @return object
-     * @throws InvalidArgumentException
-     */
-    public function inject($class)
-    {
-        $instance = new Autowire($class);
-        return $instance->execute();
-    }
 
+    /**
+     * @param $callable
+     */
+    public function invokeCallable($callable, &$callableParams = [])
+    {
+        if (is_array($callable) && is_callable($callable)) {
+            $callable = $this->findInjectablePropertiesAndMethodParameters($callable, $callableParams);
+            return CallBackHandler::get($callable, $callableParams);
+        }
+        
+        if (class_exists($callable)) {
+            $callable = $this->injectObjectProperties($callable);
+            return $callable;
+        }
+
+        if ($callable instanceof \Closure || is_string($callable)) {
+            $callableParams = array_merge($this->findInjectableClosureParameters($callable), $callableParams);
+            return CallBackHandler::get($callable, $callableParams);
+        }
+        return $callable;
+    }
+    
     /**
      * @param array $callable
      * @referencedParam $callableParams
      * @return $callable
      */
-    public function injectArrayCallable(array $callable, &$callableParams = [])
+    public function findInjectablePropertiesAndMethodParameters(array $callable, &$callableParams = [])
     {
         if (class_exists($callable[0])) {
-            $callable[0] = $this->inject($callable[0]);
-            $callableParams = $this->injectMethodParameters($callable[0], $callable[1]);
+            $callable[0] = $this->injectObjectProperties($callable[0]);
+            $callableParams = $this->findInjectableMethodParameters($callable[0], $callable[1]);
             return $callable;
         }
         return $callable;
+    }
+
+    /**
+     * @param $class
+     * @return object
+     * @throws InvalidArgumentException
+     */
+    public function injectObjectProperties($class)
+    {
+        return (new AutowireProperty())->autowire($class);
     }
 
     /**
@@ -65,14 +89,9 @@ class DiFactory
      * @referencedParam $callableParams
      * @return array
      */
-    public function injectClosureParameters($callable)
+    public function findInjectableClosureParameters($callable)
     {
-        if ($callable instanceof \Closure || is_string($callable)) {
-            $ref = new \ReflectionFunction($callable);
-            $parameters   = $ref->getParameters();
-            return $this->getContainer()->getDependencies($parameters);
-        }
-        return [];
+        return (new AutowireFunction())->autowire($callable);
     }
 
     /**
@@ -80,10 +99,8 @@ class DiFactory
      * @param string $method
      * @return array
      */
-    public function injectMethodParameters($objectOrMethod, string $method)
+    public function findInjectableMethodParameters($objectOrMethod, string $method)
     {
-        $reflectionMethod = new \ReflectionMethod($objectOrMethod, $method);
-        $parameters = $reflectionMethod->getParameters();
-        return $this->getContainer()->getDependencies($parameters);
+        return (new AutowireMethod())->autowire($objectOrMethod, $method);
     }
 }

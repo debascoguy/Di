@@ -24,6 +24,14 @@ class NamespaceResolver
             return $InjectableClassName;
         }
 
+        //Try getting the prop->type->name
+        if ($prop->getType() != null) {
+            $InjectableClassName = $prop->getType()->getName() . DIRECTORY_SEPARATOR . $className;
+            if (class_exists($InjectableClassName)) {
+                return $InjectableClassName;
+            }
+        }        
+
         //Try using the namespace of the prop
         $InjectableClassName = $prop->getDeclaringClass()->getNamespaceName() . DIRECTORY_SEPARATOR . $className;
         if (class_exists($InjectableClassName)) {

@@ -68,7 +68,12 @@ class HelloWorld {
         return $this->world;
     }
 
-    public function exampleForInjectingFunction(Hello $hello, World $world) {
+    /**
+     * You can use any of the Standard inject annotation here. e.g:
+     * @Inject Hello $hello
+     * @Inject World $world
+     */
+    public function exampleForInjectingMethod(Hello $hello, World $world) {
         $this->hello = $hello;
         $this->world = $world;
     }
@@ -92,16 +97,20 @@ echo $helloWorld->getHello();   //Output string "Hello"
 echo $helloWorld->getWorld();   //Output string "World"
 echo $helloWorld;               //Output string "Hello World Ademola Aina"
 
-//AUTO-INJECT FUNCTION CALL
-$callableParams = [];
-$helloWorld = $di->injectCallable([new HelloWorld(), "exampleForInjectingFunction"], $callableParams);
+//BASIC AUTO-INJECT FUNCTION CALL
+$helloWorld = new HelloWorld();
+
+$callableParams = $di->findInjectableMethodParameters($helloWorld, "exampleForInjectingMethod");
 //OR
-$helloWorld = $di->injectCallable([HelloWorld::class, "exampleForInjectingFunction"], $callableParams);
-$helloWorld->exampleForInjectingFunction($callableParams[0], $callableParams[1]);
+$callableParams = $di->findInjectableMethodParameters(HelloWorld::class, "exampleForInjectingMethod");
+
+$helloWorld->exampleForInjectingMethod($callableParams[0], $callableParams[1]);
 
 echo $helloWorld->getHello();   //Output string "Hello"
 echo $helloWorld->getWorld();   //Output string "World"
 echo $helloWorld;               //Output string "Hello World Ademola Aina"
+
+
 
  ```
 

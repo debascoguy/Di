@@ -7,7 +7,7 @@
 namespace Emma\Di\Container;
 
 use Emma\Di\Container\Interfaces\ContainerInterface;
-use Emma\Common\Singleton\SingletonInterface\SingletonInterface;
+use Emma\Common\Singleton\Interfaces\SingletonInterface;
 use Emma\Common\Singleton\Singleton;
 use Emma\Common\Property\Property;
 use InvalidArgumentException;
