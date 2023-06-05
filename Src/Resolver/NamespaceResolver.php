@@ -13,10 +13,10 @@ class NamespaceResolver
      * @return mixed|null|string
      * @throws \InvalidArgumentException
      */
-    public static function resolve(\ReflectionClass $reflector, \ReflectionProperty $prop, $className)
+    public static function resolve(\ReflectionClass $reflector, \ReflectionProperty $prop, $className): mixed
     {
-        if (empty($className)){
-            return ;
+        if (empty($className)) {
+            return $className;
         }
         
         $InjectableClassName = $className;
@@ -56,13 +56,14 @@ class NamespaceResolver
      * @param $file
      * @return array
      */
-    public static function getAll($file){
+    public static function getAll($file): array
+    {
         if ($handle = fopen($file, "r")) {
             $useClasses = [];
             while (($lineString = fgets($handle, 4096)) !== false) {
-                $lineString = StringManagement::strip_space($lineString, " ");
+                $lineString = StringManagement::stripSpace($lineString, " ");
                 if (StringManagement::startsWith($lineString, "use")){
-                    $useClass = StringManagement::strip_space(str_replace(["use ", ";"], "", $lineString));
+                    $useClass = StringManagement::stripSpace(str_replace(["use ", ";"], "", $lineString));
                     if (version_compare(PHP_MAJOR_VERSION, 7, ">=")) {
                         if (strpos($useClass, "{") !== false ) {
                             $pos = strpos($useClass, "{");
@@ -92,15 +93,16 @@ class NamespaceResolver
      * @param $className
      * @return null|string
      */
-    public static function getClass($file, $className){
+    public static function getClass($file, $className): ?string
+    {
         if ($handle = fopen($file, "r")) {
             $useClass = null;
             while (($lineString = fgets($handle, 4096)) !== false) {
-                $lineString = StringManagement::strip_space($lineString, " ");
+                $lineString = StringManagement::stripSpace($lineString, " ");
                 if (StringManagement::startsWith($lineString, "use ") && StringManagement::contains($lineString, $className)) {
-                    $useClass = StringManagement::strip_space(str_replace(["use ", ";"], "", $lineString));
+                    $useClass = StringManagement::stripSpace(str_replace(["use ", ";"], "", $lineString));
                     if (version_compare(PHP_MAJOR_VERSION, 7, ">=")) {
-                        if (strpos($useClass, "{") !== false ) {
+                        if (str_contains($useClass, "{")) {
                             $pos = strpos($useClass, "{");
                             $namespace = substr($useClass, 0, $pos);
                             $useClass = $namespace.$className;

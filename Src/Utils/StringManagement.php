@@ -5,28 +5,26 @@ namespace Emma\Di\Utils;
 /**
  * @Author: Ademola Aina
  * Email: debascoguy@gmail.com
- * Date: 4/9/2016
- * Time: 8:52 PM
  */
 class StringManagement
 {
     /**
-     * @param $string
+     * @param string $string
      * @param string $replace_with
      * @return string
      */
-    public static function strip_space($string, $replace_with = "")
+    public static function stripSpace(string $string, string $replace_with = ""): string
     {
         return trim(preg_replace('/\s+/', $replace_with, $string));
     }
 
     /**
-     * @param $haystack
-     * @param $needle
+     * @param string $haystack
+     * @param string $needle
      * @param bool $case_sensitive
      * @return bool
      */
-    public static function startsWith($haystack, $needle, $case_sensitive = false)
+    public static function startsWith(string $haystack, string $needle, bool $case_sensitive = false): bool
     {
         $length = strlen($needle);
         if ($case_sensitive) {
@@ -42,7 +40,7 @@ class StringManagement
      * @param bool $case_sensitive
      * @return bool
      */
-    public static function endsWith($haystack, $needle, $case_sensitive = false)
+    public static function endsWith(string $haystack, string $needle, bool $case_sensitive = false): bool
     {
         $length = strlen($needle);
         if ($length == 0) {
@@ -62,7 +60,7 @@ class StringManagement
      * @param $haystack
      * @return bool
      */
-    public static function in_arrayi($needle, $haystack)
+    public static function in_arrayi($needle, $haystack): bool
     {
         if (count($haystack) <= 0){
             return false;
@@ -72,12 +70,12 @@ class StringManagement
 
 
     /**
-     * @param $_haystack
-     * @param $_needle
+     * @param array|string $_haystack
+     * @param array|string $_needle
      * @param bool $case_sensitive
      * @return bool
      */
-    public static function contains($_haystack, $_needle, $case_sensitive = false)
+    public static function contains(array|string $_haystack, array|string $_needle, bool $case_sensitive = false): bool
     {
         if (is_array($_haystack)) {
             if (is_array($_needle)) {
@@ -100,7 +98,7 @@ class StringManagement
      * @param string $subject
      * @return string
      */
-    public static function str_ireplace($search, $replace, $subject) 
+    public static function str_ireplace(string $search, string $replace, string $subject): string
     {
         $search = preg_quote($search, "/");
         return preg_replace("/".$search."/i", $replace, $subject);
@@ -111,7 +109,7 @@ class StringManagement
      * @param string $separator
      * @return string
      */
-    public static function camelCaseToUnderscore($string, $separator = '_')
+    public static function camelCaseToUnderscore(string $string, string $separator = '_'): string
     {
         return strtolower(preg_replace('/([a-z])([A-Z])/', '$1' . $separator . '$2', $string));
     }
@@ -120,9 +118,9 @@ class StringManagement
      * @param string $string
      * @param bool $ucFirst
      * @param string $separator
-     * @return mixed
+     * @return string
      */
-    public static function underscoreToCamelCase($string, $ucFirst = false, $separator = '_')
+    public static function underscoreToCamelCase(string $string, bool $ucFirst = false, string $separator = '_'): string
     {
         $str = str_replace(' ', '', ucwords(str_replace($separator, ' ', $string)));
         if (!$ucFirst) {

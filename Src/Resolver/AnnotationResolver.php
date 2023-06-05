@@ -16,7 +16,7 @@ class AnnotationResolver
      * @param $prop
      * @return array
      */
-    public static function resolve($reflector, $prop)
+    public static function resolve($reflector, $prop): array
     {
         $docComment = $prop->getDocComment();
         $injectableInfo = CommentResolver::resolve(
@@ -33,7 +33,7 @@ class AnnotationResolver
      * @param array $injectableBaseNames
      * @return array|null
      */
-    public static function resolveAll(string $docComment, array &$injectableBaseNames)
+    public static function resolveAll(string $docComment, array &$injectableBaseNames): ?array
     {
         return CommentResolver::resolveAll(
             $docComment, 

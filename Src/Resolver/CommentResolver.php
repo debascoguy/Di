@@ -9,9 +9,9 @@ class CommentResolver
     /**
      * @param $docComment
      * @param string $_at
-     * @return array|null
+     * @return array|string|null
      */
-    public static function resolve($docComment, string $_at = "\w+")
+    public static function resolve($docComment, string $_at = "\w+"): array|string|null
     {
         $pattern = '/\@'.$_at.'\s+[\\\.\w+]+/i';
         if (preg_match($pattern, $docComment, $matches)){
@@ -32,8 +32,8 @@ class CommentResolver
     /**
      * @param string $docComment
      * @param string $_at
-     * @param array $injectableBaseNames (return param reference)
-     * return @array
+     * @param array $injectableBaseNames  (param reference)
+     * @return array|null
      */
     public static function resolveAll(string $docComment, string $_at = "\w+", array &$injectableBaseNames = []): ?array
     {

@@ -5,20 +5,22 @@ use Closure;
 use Emma\Common\CallBackHandler\CallBackHandler;
 use Emma\Di\Container\ContainerManager;
 use Emma\Common\Singleton\Singleton;
-use Emma\Di\Autowire\AutowireFunction;
-use Emma\Di\Autowire\AutowireMethod;
-use Emma\Di\Autowire\AutowireProperty;
+use Emma\Di\Autowire\AutowiredFunction;
+use Emma\Di\Autowire\AutowiredMethod;
+use Emma\Di\Autowire\AutowiredProperty;
 use InvalidArgumentException;
 
 class DiFactory
 {
     use ContainerManager, Singleton;
-    
+
     /**
-     * @param \Closure|string|array|object $callable
-     * @return @callable
+     * @param $callable
+     * @param array $callableParams
+     * @return array|Closure|mixed|object|string
+     * @throws \ReflectionException
      */
-    public function injectCallable($callable, &$callableParams = [])
+    public function injectCallable($callable, array &$callableParams = []): mixed
     {
         if (is_array($callable)) {
             return $this->findInjectablePropertiesAndMethodParameters($callable, $callableParams);
@@ -39,8 +41,11 @@ class DiFactory
 
     /**
      * @param $callable
+     * @param array $callableParams
+     * @return mixed|object
+     * @throws \ReflectionException
      */
-    public function invokeCallable($callable, &$callableParams = [])
+    public function invokeCallable($callable, array &$callableParams = []): mixed
     {
         if (is_array($callable) && is_callable($callable)) {
             $callable = $this->findInjectablePropertiesAndMethodParameters($callable, $callableParams);
@@ -58,13 +63,14 @@ class DiFactory
         }
         return $callable;
     }
-    
+
     /**
      * @param array $callable
-     * @referencedParam $callableParams
-     * @return $callable
+     * @param array $callableParams
+     * @return array
+     * @throws \ReflectionException
      */
-    public function findInjectablePropertiesAndMethodParameters(array $callable, &$callableParams = [])
+    public function findInjectablePropertiesAndMethodParameters(array $callable, array &$callableParams = []): array
     {
         if (class_exists($callable[0])) {
             $callable[0] = $this->injectObjectProperties($callable[0]);
@@ -79,28 +85,29 @@ class DiFactory
      * @return object
      * @throws InvalidArgumentException
      */
-    public function injectObjectProperties($class)
+    public function injectObjectProperties($class): object
     {
-        return (new AutowireProperty())->autowire($class);
+        return (new AutowiredProperty())->autowire($class);
     }
 
     /**
-     * @param \Closure|string $callable
+     * @param string|\Closure $callable
      * @referencedParam $callableParams
      * @return array
      */
-    public function findInjectableClosureParameters($callable)
+    public function findInjectableClosureParameters(string|Closure $callable): array
     {
-        return (new AutowireFunction())->autowire($callable);
+        return (new AutowiredFunction())->autowire($callable);
     }
 
     /**
      * @param object|string $objectOrMethod
      * @param string $method
      * @return array
+     * @throws \ReflectionException
      */
-    public function findInjectableMethodParameters($objectOrMethod, string $method)
+    public function findInjectableMethodParameters(object|string $objectOrMethod, string $method): array
     {
-        return (new AutowireMethod())->autowire($objectOrMethod, $method);
+        return (new AutowiredMethod())->autowire($objectOrMethod, $method);
     }
 }
