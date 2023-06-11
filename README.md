@@ -30,34 +30,49 @@ class HelloWorld {
      * See how we use the annotation to auto-inject the dependency class
      * @var Hello
      * @Inject Hello
+     * 
+     * OR - use PHP 8 Attribute
      */
+    #[Inject([Hello::class])]
     protected  Hello $hello;
 
     /**
      * @var World
      * @Inject World
+     * 
+     * OR - use PHP 8 Attribute
      */
+    #[Inject([World::class])]
     protected  World $world;
 
     /**
      * auto-wire by from CONFIG_VAR registered in container
      * @var string
      * @Inject (config='firstname')
+     * 
+     * OR - use PHP 8 Attribute
      */
+    #[Inject(['firstname'])]
     protected string $firstname;
 
     /**
      * auto-wire by from CONFIG_VAR registered in container
      * @var string
      * @Inject (config='lastname')
+     * 
+     * OR - use PHP 8 Attribute
      */
+    #[Inject(['lastname'])]
     protected string $lastname;
 
     /**
      * auto-wire by name registered in container
      * @var string
      * @Inject (name='email')
+     * 
+     * OR - use PHP 8 Attribute
      */
+    #[Inject(['email'])]
     protected string $email;
 
     public function getHello() {
@@ -70,9 +85,13 @@ class HelloWorld {
 
     /**
      * You can use any of the Standard inject annotation here. e.g:
+     * 
      * @Inject Hello $hello
      * @Inject World $world
+     * 
+     * OR - use PHP 8 Attribute
      */
+    #[Inject(['hello' => Hello::class, 'world' => World::class])]
     public function exampleForInjectingMethod(Hello $hello, World $world) {
         $this->hello = $hello;
         $this->world = $world;
@@ -83,15 +102,23 @@ class HelloWorld {
     }
 }
 
-$di = new Emma\Di\DiFactory();
-$di->getContainer()->register('CONFIG_VAR', ['firstname' => 'Ademola', 'lastname' => 'Aina']);
-$di->getContainer()->register('email', 'debascoguy@gmail.com');
+
+use Emma\Di\Autowire\Autowire;
+use ContainerManager;
+
+/** @var AutowireInterface $autowire */
+$autowire = $this->getContainer()->get(Autowire::class);
+
+$container = $this->getContainer();
+$container->register('CONFIG_VAR', ['firstname' => 'Ademola', 'lastname' => 'Aina']);
+$container->register('email', 'debascoguy@gmail.com');
+
 
 //All annotation with @Inject will be auto-wired into as dependency class
-$helloWorld = $di->injectCallable(new HelloWorld());
+$helloWorld = $autowire->autowire(new HelloWorld());
 
 //OR
-$helloWorld = $di->injectCallable(HelloWorld::class);
+$helloWorld = $autowire->autowire(HelloWorld::class);
 
 echo $helloWorld->getHello();   //Output string "Hello"
 echo $helloWorld->getWorld();   //Output string "World"
@@ -100,11 +127,11 @@ echo $helloWorld;               //Output string "Hello World Ademola Aina"
 //BASIC AUTO-INJECT FUNCTION CALL
 $helloWorld = new HelloWorld();
 
-$callableParams = $di->findInjectableMethodParameters($helloWorld, "exampleForInjectingMethod");
+$methodsParameterMap = $callableParams = $autowire->autowire($helloWorld, "exampleForInjectingMethod");
 //OR
-$callableParams = $di->findInjectableMethodParameters(HelloWorld::class, "exampleForInjectingMethod");
+$methodsParameterMap = $callableParams = $autowire->autowire(HelloWorld::class, "exampleForInjectingMethod");
 
-$helloWorld->exampleForInjectingMethod($callableParams[0], $callableParams[1]);
+$helloWorld->exampleForInjectingMethod($methodsParameterMap[0], $methodsParameterMap[1]);
 
 echo $helloWorld->getHello();   //Output string "Hello"
 echo $helloWorld->getWorld();   //Output string "World"
