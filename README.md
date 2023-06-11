@@ -1,6 +1,6 @@
 # Di - Dependency Injection
 
-A PHP 7.0+ Simple Dependency Injection - Di - library. Light weight and Easy to use. Autowire any class. Similarly, you can autowire any config variables or values stored in the container.
+A PHP 8.0+ Simple Dependency Injection - Di - library. Light weight and Easy to use. Autowire any class. Similarly, you can autowire any config variables or values stored in the container.
 
  I am not going to bore you with lots of write-up to justify why you should or should not use this library as I strongly believe nobody says no to problem solving tools. So, here are the simplest example as it can be used to solve Di:
 
