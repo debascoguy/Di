@@ -1,6 +1,6 @@
 {
     "name": "emma/di",
-    "description": "A PHP 8.0+ Dependency Injection - Di - library. Implements in both php8 Attribute - 'Inject' - and Annotation - '@Inject' - for backward cmopatibility. Lightweight and easy to use. You can autowire any config/env variables and/or values stored in the container.",
+    "description": "A PHP 7.0+ Dependency Injection - Di - library. Easy to use and can Autowire any class. Similarly, you can autowire any config variables or values stored in the container.",
     "authors": [
         {
             "name": "Ademola Aina",

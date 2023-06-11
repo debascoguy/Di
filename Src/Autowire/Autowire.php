@@ -2,127 +2,105 @@
 
 namespace Emma\Di\Autowire;
 
-use Emma\Di\Annotation\Annotation;
 use Emma\Di\Autowire\Interfaces\AutowireInterface;
 use Emma\Di\Container\ContainerManager;
-use Emma\Di\Resolver\AnnotationResolver;
-use Emma\Di\Utils\StringManagement;
-use InvalidArgumentException;
 
-/**
- * @Author: Ademola Aina
- * Email: debascoguy@gmail.com
- */
 class Autowire implements AutowireInterface
-{    
+{
     use ContainerManager;
 
     /**
-     * @var object
+     * @var AutowireInterface
      */
-    protected $object;
+    protected AutowireInterface $autowiredPropertyFactory;
 
     /**
-     * @var string
+     * @var AutowireInterface
      */
-    protected string $injectorAnnotation = Annotation::NAME;
+    protected AutowireInterface $autowiredMethodFactory;
 
     /**
-     * @var array
+     * @var bool
      */
-    protected array $configs = [];
+    protected bool $isReady = false;
 
     /**
-     * @param $class
-     * @constructor
+     * @var AutowireInterface
      */
-    public function __construct($class)
+    protected AutowireInterface $autowiredFunctionFactory;
+
+    public function __construct()
     {
-        if (!is_null($class)) {
-            $this->setObject(is_object($class) ? $class : $this->getContainer()->get($class));
-        }
+        /** @var AutowireFactory $factory */
+        $factory = $this->getContainer()->create(AutowireFactory::class);
+        $this->autowiredPropertyFactory = $factory;
+        $this->autowiredMethodFactory = clone $factory;
+        $this->autowiredFunctionFactory = clone $factory;
     }
-    
-    /**
-     * @return object
-     * @throws \InvalidArgumentException
-     */
-    public function execute()
-    {
-        $object = $this->getObject();
-        $className = get_class($object);
-        $classNameInjected = $className."::autowired";
 
-        if ($this->getContainer()->has($classNameInjected)) {
-            return $this->getContainer()->get($classNameInjected);
+    /**
+     * @return $this
+     */
+    public function make(): static
+    {
+        if ($this->isReady) {
+            return $this;
+        }
+        $this->autowiredPropertyFactory->make(AutowireProperty::class);
+        $this->autowiredMethodFactory->make(AutowireMethod::class);
+        $this->autowiredFunctionFactory->make(AutowireFunction::class);
+        $this->isReady = true;
+        return $this;
+    }
+
+    /**
+     * @param object|string|callable|array $objectOrClassOrCallable
+     * @param array|string $parameterOrMethod
+     * @return array|callable|object|null
+     */
+    public function autowire(
+        object|string|callable|array $objectOrClassOrCallable,
+        array|string &$parameterOrMethod
+    ): mixed {
+        $this->make();
+        if (is_array($objectOrClassOrCallable) && is_callable($objectOrClassOrCallable, true)) {
+            return $this->findInjectablePropertiesAndMethodParameters($objectOrClassOrCallable, $parameterOrMethod);
         }
 
-        $this->setConfigs($this->getContainer()->get("CONFIG_VARS"));
-        
-        $reflector = new \ReflectionObject($object);
-        $props = $reflector->getProperties();
-        foreach ($props as $prop) {
-            $docComment = $prop->getDocComment();
-            if (StringManagement::contains($docComment, $this->injectorAnnotation)) {
-                $prop->setAccessible(true);
-                $value = $prop->getValue($object);
-                if (!empty($value)) {
-                    continue; //Continue if injectable already set.
-                }
+        if (class_exists($objectOrClassOrCallable)) {
+            $objectOrClassOrCallable = $this->autowiredPropertyFactory->autowire($objectOrClassOrCallable);
+        }
 
-                $injectDetails = AnnotationResolver::resolve($reflector, $prop);
-                if (isset($injectDetails['config'])) {
-                    $value = $this->configs[$injectDetails['config']] ?? null;
-                    $prop->setValue($object, $value);
-                    continue;
-                }
+        if (method_exists($objectOrClassOrCallable, $parameterOrMethod)) {
+            return $this->autowiredMethodFactory->autowire($objectOrClassOrCallable, $parameterOrMethod);
+        }
 
-                if (!empty($injectDetails['name'])) {
-                    $valueObject = $this->getContainer()->get($injectDetails['name']);
-                    $valueObject = (new self($valueObject))->execute();
-                    $prop->setValue($object, $valueObject);
+        if ($objectOrClassOrCallable instanceof \Closure || is_string($objectOrClassOrCallable)) {
+            return $this->autowiredFunctionFactory->autowire($objectOrClassOrCallable);
+        }
+
+        return $objectOrClassOrCallable;
+    }
+
+    /**
+     * @param array $callable
+     * @param array $callableParams
+     * @return array
+     */
+    private function findInjectablePropertiesAndMethodParameters(array $callable, array &$callableParams = []): array
+    {
+        if (class_exists($callable[0])) {
+            $callable[0] = $this->autowiredPropertyFactory->autowire($callable[0]);
+            $diParams = $this->autowiredMethodFactory->autowire($callable[0], $callable[1]);
+            foreach ($diParams as $key => $param) {
+                if (array_key_exists($key, $callableParams)) {
+                    $diParams[$key] = $callableParams[$key];
                 }
             }
+            $callableParams = $diParams;
+            return $callable;
         }
-        
-        $this->getContainer()->register($className, $object);
-        $this->getContainer()->register($classNameInjected, $object);
-        return $object;
+        return $callable;
     }
 
-    /**
-     * @return object
-     */
-    public function getObject()
-    {
-        return $this->object;
-    }
-
-    /**
-     * @param object $object
-     * @return self
-     */
-    public function setObject($object)
-    {
-        $this->object = $object;
-        return $this;
-    }
-    
-    /**
-     * @return  array
-     */ 
-    public function getConfigs()
-    {
-        return $this->configs;
-    }
-
-    /**
-     * @param  array  $configs
-     * @return  self
-     */ 
-    public function setConfigs(array $configs)
-    {
-        $this->configs = $configs;
-        return $this;
-    }
 }

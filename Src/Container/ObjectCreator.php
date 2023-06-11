@@ -25,24 +25,24 @@ trait ObjectCreator
             $object = clone $concrete;
         }
         elseif ($concrete instanceof SingletonInterface || is_callable([$className, "getInstance"])) {
-            $object = call_user_func([$className, "getInstance"]);
+            $object = call_user_func([$className, "getInstance"], $parameters);
         }
         else {
             $object = $this->resolve($className, $parameters);
         }
         return $object;
     }
-    
+
     /**
      * @param $concrete
-     * @param $parameters
-     * @return object
-     * @throws InvalidArgumentException
+     * @param array|null $parameterValues
+     * @return mixed|object|null
+     * @throws \ReflectionException
      */
-    private function resolve($concrete, $parameters)
+    private function resolve($concrete, array $parameterValues = null)
     {
         if ($concrete instanceof \Closure) {
-            return $concrete($this, $parameters);
+            return $concrete($this, $parameterValues);
         }
         if ($concrete instanceof \ReflectionClass) {
             $reflector = $concrete;
@@ -57,11 +57,14 @@ trait ObjectCreator
         if (is_null($constructor)) {
             return $reflector->newInstance();
         }
-        $parameters   = $constructor->getParameters();
-        if (empty($parameters)) {
+        $constructorParameters   = $constructor->getParameters();
+        if (empty($constructorParameters)) {
             return $reflector->newInstance();
         }
-        $dependencies = $this->getDependencies($parameters);
+        $dependencies = $this->getDependencies($constructorParameters);
+        if (!empty($parameterValues)) {
+            $dependencies = array_merge($dependencies, $parameterValues);
+        }
         return $reflector->newInstanceArgs($dependencies);
     }
     

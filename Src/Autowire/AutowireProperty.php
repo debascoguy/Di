@@ -2,26 +2,29 @@
 
 namespace Emma\Di\Autowire;
 
-use Emma\Di\Autowire\Helper\AutowirePropertyHelper;
+use Emma\Di\Autowire\Helper\AutowiredPropertyHelper;
 use Emma\Di\Autowire\Interfaces\AutowireInterface;
 use Emma\Di\Container\ContainerManager;
 
 class AutowireProperty implements AutowireInterface
 {
-    use ContainerManager, AutowirePropertyHelper;
+    use ContainerManager, AutowiredPropertyHelper;
 
     /**
-     * @param $classOrObject
+     * @param object|string|callable|array $objectOrClassOrClass
+     * @param array|string|null $_
      * @return object
-     * @throws \InvalidArgumentException
      */
-    public function autowire($classOrObject)
-    {
-        if (is_null($classOrObject)) {
-            return $classOrObject;
+    public function autowire(
+        object|string|callable|array $objectOrClassOrClass,
+        array|string &$_ = null
+    ): object {
+
+        if (!is_object($objectOrClassOrClass) && !class_exists($objectOrClassOrClass)) {
+            return $objectOrClassOrClass;
         }
 
-        $object = is_object($classOrObject) ? $classOrObject : $this->getContainer()->get($classOrObject);
+        $object = is_object($objectOrClassOrClass) ? $objectOrClassOrClass : $this->getContainer()->create($objectOrClassOrClass);
         $className = get_class($object);
         $classNameInjected = $className."::autowired";
 
@@ -33,6 +36,7 @@ class AutowireProperty implements AutowireInterface
         
         $this->getContainer()->register($className, $object);
         $this->getContainer()->register($classNameInjected, $object);
+
         return $object;
     }
     
