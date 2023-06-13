@@ -93,8 +93,10 @@ class Autowire implements AutowireInterface
             $callable[0] = $this->autowiredPropertyFactory->autowire($callable[0]);
             $diParams = $this->autowiredMethodFactory->autowire($callable[0], $callable[1]);
             foreach ($diParams as $key => $param) {
-                if (array_key_exists($key, $callableParams)) {
-                    $diParams[$key] = $callableParams[$key];
+                foreach($callableParams as $key2 => $value) {
+                    if (strtolower($key2) == strtolower($key)) {
+                        $diParams[$key] = $value;
+                    }
                 }
             }
             $callableParams = $diParams;
