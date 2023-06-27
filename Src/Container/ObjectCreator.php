@@ -61,7 +61,7 @@ trait ObjectCreator
         if (empty($constructorParameters)) {
             return $reflector->newInstance();
         }
-        $dependencies = $this->getDependencies($constructorParameters);
+        $dependencies = $this->getDependencies($constructorParameters, $parameterValues);
         if (!empty($parameterValues)) {
             $dependencies = array_merge($dependencies, $parameterValues);
         }
@@ -72,19 +72,26 @@ trait ObjectCreator
      * @param \ReflectionParameter[] $parameters
      * @return array
      */
-    public function getDependencies(array $parameters)
+    public function getDependencies(array $parameters, array $parameterValues = null)
     {
         $params = [];
         foreach($parameters as $parameter) {
+            $name = $parameter->getName();
             $type = $parameter->getType();
-            if ($type && !$type->isBuiltin()) {
-                $params[$parameter->getName()] = $this->get($type->getName());
+            if (!($type instanceof \ReflectionUnionType)
+                && !empty($parameterValues)
+                && isset($parameterValues[$name])
+                && is_object($parameterValues[$name])) {
+                $params[$name] = $parameterValues[$name];
+            }
+            elseif ($type && !($type instanceof \ReflectionUnionType) && !$type->isBuiltin()) {
+                $params[$name] = $this->get($type->getName());
             }
             elseif ($parameter->isDefaultValueAvailable()) {
-                $params[$parameter->getName()] = $parameter->getDefaultValue();
+                $params[$name] = $parameter->getDefaultValue();
             }
             else{
-                $params[$parameter->getName()] =  null;
+                $params[$name] =  null;
             }
         }
         return $params;
