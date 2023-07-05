@@ -71,7 +71,7 @@ class Autowire implements AutowireInterface
             $objectOrClassOrCallable = $this->autowiredPropertyFactory->autowire($objectOrClassOrCallable);
         }
 
-        if (method_exists($objectOrClassOrCallable, $parameterOrMethod)) {
+        if (is_string($parameterOrMethod) && method_exists($objectOrClassOrCallable, $parameterOrMethod)) {
             return $this->autowiredMethodFactory->autowire($objectOrClassOrCallable, $parameterOrMethod);
         }
 

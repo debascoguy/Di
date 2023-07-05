@@ -16,7 +16,7 @@ trait AutowiredPropertyHelper
      */
     protected function helper($object): object
     {
-        $configs = $this->getContainer()->get("CONFIG_VARS");
+        $configs = $this->getContainer()->has("CONFIG_VARS") ? $this->getContainer()->get("CONFIG_VARS") : [];
         $reflector = new \ReflectionObject($object);
         $props = $reflector->getProperties();
         foreach ($props as $prop) {
