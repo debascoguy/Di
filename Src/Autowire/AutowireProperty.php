@@ -24,7 +24,14 @@ class AutowireProperty implements AutowireInterface
             return $objectOrClassOrClass;
         }
 
-        $object = is_object($objectOrClassOrClass) ? $objectOrClassOrClass : $this->getContainer()->create($objectOrClassOrClass);
+        if (is_object($objectOrClassOrClass)) {
+            $object = $objectOrClassOrClass;
+            $isConstructed = true;
+        } else {
+            $object = $this->getContainer()->create($objectOrClassOrClass, null, true);
+            $isConstructed = false;
+        }
+
         $className = get_class($object);
         $classNameInjected = $className."::autowired";
 
@@ -33,6 +40,9 @@ class AutowireProperty implements AutowireInterface
         }
 
         $object = $this->helper($object);
+        if (!$isConstructed && method_exists($object, "__construct")) {
+            $object->__construct();
+        }
         
         $this->getContainer()->register($className, $object);
         $this->getContainer()->register($classNameInjected, $object);

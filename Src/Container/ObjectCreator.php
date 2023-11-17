@@ -18,7 +18,7 @@ trait ObjectCreator
      * @return mixed|object
      * @throws InvalidArgumentException
      */
-    public function create($concrete, $parameters = null)
+    public function create($concrete, $parameters = null, $instanceWithoutConstructor = false)
     {
         $className = is_object($concrete) ? get_class($concrete) : $concrete;
         if (is_object($concrete) && !($concrete instanceof \ReflectionClass)) {
@@ -28,7 +28,7 @@ trait ObjectCreator
             $object = call_user_func([$className, "getInstance"], $parameters);
         }
         else {
-            $object = $this->resolve($className, $parameters);
+            $object = $this->resolve($className, $parameters, $instanceWithoutConstructor);
         }
         return $object;
     }
@@ -39,7 +39,7 @@ trait ObjectCreator
      * @return mixed|object|null
      * @throws \ReflectionException
      */
-    private function resolve($concrete, array $parameterValues = null)
+    private function resolve($concrete, array $parameterValues = null, $instanceWithoutConstructor = false)
     {
         if ($concrete instanceof \Closure) {
             return $concrete($this, $parameterValues);
@@ -50,13 +50,19 @@ trait ObjectCreator
         else{
             $reflector = new \ReflectionClass($concrete);
         }
+
         if (!$reflector->isInstantiable()) {
             throw new InvalidArgumentException("Class {$concrete} is not instantiable");
         }
+
+        if ($instanceWithoutConstructor) {
+            return $reflector->newInstanceWithoutConstructor();
+        }
+
         $constructor = $reflector->getConstructor();
         if (is_null($constructor)) {
             return $reflector->newInstance();
-        }
+        }        
         $constructorParameters   = $constructor->getParameters();
         if (empty($constructorParameters)) {
             return $reflector->newInstance();
